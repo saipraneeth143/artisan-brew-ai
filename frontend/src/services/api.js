@@ -1,9 +1,17 @@
 import axios from 'axios';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
+const normalizeApiBaseUrl = () => {
+  const raw = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '');
+  if (raw) {
+    return raw.endsWith('/api') ? raw : `${raw}/api`;
+  }
+  return import.meta.env.PROD
+    ? 'https://artisan-brew-ai.onrender.com/api'
+    : 'http://localhost:5000/api';
+};
+
+const API_BASE_URL = normalizeApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
